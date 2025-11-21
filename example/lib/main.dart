@@ -80,8 +80,10 @@ class _HomePageState extends State<HomePage> {
   void onPressed() {
     print("calling onPressed");
     int indexToInsert = _controller.selection.baseOffset;
-    _controller.document.insert(indexToInsert, "Some text! ");
 
+    String imagePath =
+        '/Users/chuang-chunliu/Library/Developer/CoreSimulator/Devices/66996CB4-D8E4-4429-A577-BB6BF4D763D2/data/Containers/Data/Application/E7CF92A0-5D5D-40BA-8878-D585B6DB3DA0/tmp/image_picker_85F3BEB0-DCA8-4CEB-9E6D-660AEE74D74C-8577-00000F64973BE4B5.jpg';
+    _controller.document.insert(indexToInsert, BlockEmbed.image(imagePath));
     _controller.updateSelection(
         TextSelection.collapsed(offset: _controller.document.length),
         ChangeSource.local);
