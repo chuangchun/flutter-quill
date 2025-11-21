@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill_example/quill_delta_sample.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:path/path.dart' as path;
+import 'dart:io';
 
 void main() => runApp(const MainApp());
 
@@ -73,77 +74,64 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     // Load document
-    _controller.document = Document.fromJson(kQuillDefaultSample);
+    _controller.document = Document(); //.fromJson(kQuillDefaultSample);
+  }
+
+  void onPressed() {
+    print("calling onPressed");
+    int indexToInsert = _controller.selection.baseOffset;
+    _controller.document.insert(indexToInsert, "Some text! ");
+
+    _controller.updateSelection(
+        TextSelection.collapsed(offset: _controller.document.length),
+        ChangeSource.local);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Quill Example'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.output),
-            tooltip: 'Print Delta JSON to log',
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content:
-                      Text('The JSON Delta has been printed to the console.')));
-              debugPrint(jsonEncode(_controller.document.toDelta().toJson()));
-            },
-          ),
-        ],
-      ),
       body: SafeArea(
         child: Column(
           children: [
+            ElevatedButton(onPressed: onPressed, child: const Text('do')),
             QuillSimpleToolbar(
               controller: _controller,
               config: QuillSimpleToolbarConfig(
-                embedButtons: FlutterQuillEmbeds.toolbarButtons(),
-                showClipboardPaste: true,
-                customButtons: [
-                  QuillToolbarCustomButtonOptions(
-                    icon: const Icon(Icons.add_alarm_rounded),
-                    onPressed: () {
-                      _controller.document.insert(
-                        _controller.selection.extentOffset,
-                        TimeStampEmbed(
-                          DateTime.now().toString(),
-                        ),
-                      );
-
-                      _controller.updateSelection(
-                        TextSelection.collapsed(
-                          offset: _controller.selection.extentOffset + 1,
-                        ),
-                        ChangeSource.local,
-                      );
-                    },
-                  ),
-                ],
-                buttonOptions: QuillSimpleToolbarButtonOptions(
-                  base: QuillToolbarBaseButtonOptions(
-                    afterButtonPressed: () {
-                      final isDesktop = {
-                        TargetPlatform.linux,
-                        TargetPlatform.windows,
-                        TargetPlatform.macOS
-                      }.contains(defaultTargetPlatform);
-                      if (isDesktop) {
-                        _editorFocusNode.requestFocus();
-                      }
-                    },
-                  ),
-                  linkStyle: QuillToolbarLinkStyleButtonOptions(
-                    validateLink: (link) {
-                      // Treats all links as valid. When launching the URL,
-                      // `https://` is prefixed if the link is incomplete (e.g., `google.com` → `https://google.com`)
-                      // however this happens only within the editor.
-                      return true;
-                    },
-                  ),
-                ),
+                multiRowsDisplay: true,
+                showDividers: false,
+                showFontFamily: false,
+                showFontSize: false,
+                showBoldButton: false,
+                showItalicButton: false,
+                showLineHeightButton: false,
+                showStrikeThrough: false,
+                showInlineCode: false,
+                showColorButton: false,
+                showBackgroundColorButton: false,
+                showClearFormat: false,
+                showAlignmentButtons: false,
+                showHeaderStyle: false,
+                showListNumbers: false,
+                showListBullets: false,
+                showListCheck: false,
+                showCodeBlock: false,
+                showQuote: false,
+                showIndent: false,
+                showLink: false,
+                showUndo: false,
+                showRedo: false,
+                showDirection: false,
+                showSearchButton: false,
+                showSmallButton: false,
+                showSubscript: false,
+                showSuperscript: false,
+                showClipboardCut: false,
+                showClipboardCopy: false,
+                showClipboardPaste: false,
+                showUnderLineButton: false,
+                embedButtons: FlutterQuillEmbeds.toolbarButtons(
+                    imageButtonOptions: QuillToolbarImageButtonOptions(),
+                    videoButtonOptions: null),
               ),
             ),
             Expanded(
@@ -157,22 +145,15 @@ class _HomePageState extends State<HomePage> {
                   embedBuilders: [
                     ...FlutterQuillEmbeds.editorBuilders(
                       imageEmbedConfig: QuillEditorImageEmbedConfig(
-                        imageProviderBuilder: (context, imageUrl) {
-                          // https://pub.dev/packages/flutter_quill_extensions#-image-assets
-                          if (imageUrl.startsWith('assets/')) {
-                            return AssetImage(imageUrl);
-                          }
-                          return null;
-                        },
-                      ),
-                      videoEmbedConfig: QuillEditorVideoEmbedConfig(
-                        customVideoBuilder: (videoUrl, readOnly) {
-                          // To load YouTube videos https://github.com/singerdmx/flutter-quill/releases/tag/v10.8.0
-                          return null;
-                        },
-                      ),
+                          imageProviderBuilder: (context, imageUrl) {
+                        // https://pub.dev/packages/flutter_quill_extensions#-image-assets
+                        print("**** file image $imageUrl");
+                        return Image(
+                                image: ResizeImage(FileImage(File(imageUrl)),
+                                    width: 12, height: 100))
+                            .image;
+                      }),
                     ),
-                    TimeStampEmbedBuilder(),
                   ],
                 ),
               ),

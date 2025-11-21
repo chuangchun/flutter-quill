@@ -9,7 +9,7 @@ class SelectImageSourceDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minHeight: 200),
+      constraints: const BoxConstraints(minHeight: 140),
       width: double.infinity,
       child: SingleChildScrollView(
         child: Column(
@@ -31,6 +31,7 @@ class SelectImageSourceDialog extends StatelessWidget {
               enabled: !isDesktopApp,
               onTap: () => Navigator.of(context).pop(InsertImageSource.camera),
             ),
+/*            
             ListTile(
               title: Text(context.loc.link),
               subtitle: Text(
@@ -39,6 +40,7 @@ class SelectImageSourceDialog extends StatelessWidget {
               leading: const Icon(Icons.link),
               onTap: () => Navigator.of(context).pop(InsertImageSource.link),
             ),
+*/
           ],
         ),
       ),
